@@ -1,6 +1,18 @@
+/*
+-
+-
+-
+-
+-
+General
+-
+-
+-
+-
+-
+*/
 * {
     box-sizing: border-box;
-
 }
 
 body {
@@ -10,7 +22,7 @@ body {
     background-color: #f9fafb;
 }
 
-header {
+header, .titulocontent {
     background-color: #1f2937;
     color: #ffffff;
     padding: 1rem;
@@ -33,7 +45,19 @@ footer {
     color: #6b7280;
     font-size: 0.875rem;
 }
-
+/*
+-
+-
+-
+-
+-
+Talleres
+-
+-
+-
+-
+-
+*/
 .catalogo {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -59,4 +83,175 @@ footer {
 
 .tarjeta a:hover {
     text-decoration: underline;
+}
+/*
+-
+-
+-
+-
+-
+Detalle
+-
+-
+-
+-
+-
+*/
+.info-taller,
+.bitacora {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-taller a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+.bitacora ul {
+    padding-left: 1.2rem;
+}
+/*
+-
+-
+-
+-
+-
+index principal
+-
+-
+-
+-
+-
+*/
+.tables {
+    background-color: #ffffff;
+    border: 1px solid #b5b6b9;
+    border-end-start-radius: 0.5rem;
+    border-end-end-radius: 0.5rem;
+    padding: 1rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead th {
+    background-color: #1f2937;
+    color: #ffffff;
+    text-align: left;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+}
+
+tbody td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+}
+
+tbody tr:hover {
+    background-color: #1f29376e;
+}
+
+table a {
+    color: #3b82f6;
+    text-decoration: none;
+}
+
+table a:hover {
+    text-decoration: underline;
+}
+/*
+-
+-
+-
+-
+-
+Formulario
+-
+-
+-
+-
+-
+*/
+
+/*Regla propia del formulario*/
+.formulario-registro {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+}
+
+/*Regla propia del input*/
+.formulario-registro input {
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    font-family: inherit;
+}
+
+/*Regla propia de cada input*/
+#nombre {
+    padding: 0.5rem;
+    border: 1px solid #3b82f6;
+    border-radius: 0.375rem;
+    font-family: inherit;
+    width: 100%;
+    margin-bottom: 0.75rem;
+}
+
+#boleta {
+    padding: 0.5rem;
+    border: 1px solid #f50be9;
+    border-radius: 0.375rem;
+    font-family: inherit;
+    width: 100%;
+    margin-bottom: 0.75rem;
+}
+
+/*Regla propia del boton*/
+.formulario-registro button {
+    padding: 0.5rem;
+    background-color: #1f2937;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+/*Regla del boton con el hover*/
+.formulario-registro button:hover {
+    background-color: #ff0000;
+}
+
+/*Regla cuando un input es invalido*/
+.formulario-registro input:invalid {
+    border-color: #ef4444;
+}
+
+/*Reglas cuando el registro sea exitoso*/
+.formulario-registro:valid button {
+    color: #16a34a;
+}
+
+.formulario-registro:valid button:hover{
+    background-color:#16a34a ;
+    color: black;
+}
+
+.formulario-registro:valid #nombre,
+.formulario-registro:valid #boleta {
+    border-color: #16a34a;
 }
