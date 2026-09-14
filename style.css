@@ -60,7 +60,6 @@ tbody td {
 
 tbody tr:hover {
     background-color: #ea580c26;
-    transition: background-color 0.2s ease;
 }
 
 table a {
