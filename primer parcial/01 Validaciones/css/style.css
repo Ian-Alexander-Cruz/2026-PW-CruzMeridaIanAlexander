@@ -153,20 +153,35 @@ Formulario
 /*Regla propia de cada input*/
 #nombre {
     padding: 0.5rem;
-    border: 1px solid #3b82f6;
     border-radius: 0.375rem;
     font-family: inherit;
     width: 100%;
     margin-bottom: 0.75rem;
+    color: #1e40af;
+    background-color: #eff6ff;
+    box-shadow: inset 0 1px 2px rgba(59, 130, 246, 0.1);
 }
 
 #boleta {
     padding: 0.5rem;
-    border: 1px solid #f50be9;
     border-radius: 0.375rem;
     font-family: inherit;
     width: 100%;
     margin-bottom: 0.75rem;
+    color: #86198f;
+    background-color: #fdf4ff;
+    box-shadow: inset 0 1px 2px rgba(245, 11, 233, 0.1);
+}
+
+#fecha {
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    font-family: inherit;
+    width: 100%;
+    margin-bottom: 0.75rem;
+    color: #065f46;
+    background-color: #ecfdf5;
+    box-shadow: inset 0 1px 2px rgba(16, 185, 129, 0.1);
 }
 
 /*Regla propia del boton*/
@@ -189,18 +204,48 @@ Formulario
     border-color: #ef4444;
 }
 
-/*Reglas cuando el registro sea exitoso*/
-.formulario-registro:valid button {
+/*Reglas cuando el registro sea exitoso o no*/
+#mensaje-exito {
     color: #16a34a;
+    font-weight: bold;
+    font-size: 0.9rem;
 }
 
-.formulario-registro:valid button:hover{
-    background-color:#16a34a ;
-    color: black;
+.formulario-registro span[id^="error-"] {
+    color: #ef4444;
+    font-size: 0.8rem;
+    text-align: left;
+    display: block;
+    min-height: 1rem;
 }
 
-.formulario-registro:valid #nombre,
-.formulario-registro:valid #boleta,
-.formulario-registro:valid #fecha {
+.formulario-registro button {
+    padding: 0.5rem;
+    background-color: #1f2937;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+.formulario-registro button:hover {
+    background-color: #374151;
+}
+
+.formulario-registro input.invalido {
+    border-color: #ef4444;
+    outline-color: #ef4444;
+}
+
+.formulario-registro input:not(.invalido):is([class]) {
     border-color: #16a34a;
+}
+
+.formulario-registro:has(input):not(:has(input.invalido)) button {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.formulario-registro:has(input):not(:has(input.invalido)) button:hover {
+    background-color: #15803d;
 }
