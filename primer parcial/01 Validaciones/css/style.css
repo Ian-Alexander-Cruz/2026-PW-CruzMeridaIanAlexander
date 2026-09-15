@@ -200,6 +200,7 @@ Formulario
 }
 
 .formulario-registro:valid #nombre,
-.formulario-registro:valid #boleta {
+.formulario-registro:valid #boleta,
+.formulario-registro:valid #fecha {
     border-color: #16a34a;
 }
