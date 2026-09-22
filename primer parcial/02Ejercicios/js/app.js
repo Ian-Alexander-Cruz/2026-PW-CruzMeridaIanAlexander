@@ -49,3 +49,4 @@ formArreglos.addEventListener('submit', (evento) =>{
 
     pintarTabla(resultado);
 });
+pintarTabla();
