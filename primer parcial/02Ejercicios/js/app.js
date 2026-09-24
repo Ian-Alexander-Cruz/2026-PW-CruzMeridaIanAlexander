@@ -43,7 +43,23 @@ formArreglos.addEventListener('submit', (evento) =>{
             resultado = talleres.filter((t) => t.inscritos >= t.cupo);
             break;
         case 'find':
-            resultado = [talleres.find((t) => t.instructor === 'Ing. María López')];
+            let seleccion = prompt("Elige una opción:\n1. Ing. María López\n2. Ing. Carlos Ramírez\n3. Ing. Ana Torres");
+            let maestro
+            switch(seleccion){
+                case '1':
+                    maestro = 'Ing. María López'
+                    break
+                case '2':
+                    maestro = 'Ing. Carlos Ramírez'
+                    break
+                case '3':
+                    maestro = 'Ing. Ana Torres'
+                    break      
+                default:
+                    alert('Se ha seleccionado automaticamente a Ing. María López')
+                    maestro = 'Ing. María López'
+            }
+            resultado = [talleres.find((t) => t.instructor === maestro)];
             break;
     }
 
