@@ -115,3 +115,18 @@ formObjeto.addEventListener('submit', (evento) => {
 
     resultadoObjeto.textContent = resultado;
 })
+
+//Video Gato
+
+const boton = document.getElementById('easter-egg');
+const video = document.getElementById('video');
+
+boton.addEventListener('click', (evento) => {
+    if (video.className === 'Visible') {
+        video.className = 'Invisible';
+        boton.textContent = "¿Que pasará si presiono este boton...?";
+    } else {
+        video.className = 'Visible';
+        boton.textContent = "Presiona para ocultar";
+    }
+});

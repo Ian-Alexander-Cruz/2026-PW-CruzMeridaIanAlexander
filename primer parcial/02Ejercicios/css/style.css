@@ -132,9 +132,20 @@ Objetos
     margin-top: 15px;
     font-family: 'Courier New', Courier, monospace; /* Ideal para JSON y texto técnico */
     font-size: 0.95rem;
-    color: #333333;
+    color: #fdfdfd;
     white-space: pre-wrap; /* Mantiene los saltos de línea (\n) y espacios del texto */
     word-break: break-word;
     max-height: 300px;
     overflow-y: auto; /* Agrega scroll si el texto es muy largo */
+    margin-bottom: 30px;
+}
+.easter-egg{
+    background-color: red;
+}
+#video.Visible {
+    display: block;
+}
+
+#video.Invisible {
+    display: none;
 }
