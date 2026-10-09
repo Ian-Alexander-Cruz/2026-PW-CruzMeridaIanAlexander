@@ -86,40 +86,26 @@
             <button id="easter-egg" type="submit">¿Que pasará si presiono este boton...?</button>
             <iframe id="video" class="Invisible" width="492" height="875" src="https://www.youtube.com/embed/kZeoLGG9Hw8" title="La Calabaza Baile 🎃 #calabazas #calabaza #bailesdetiktok #challenge" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </section>
-        <section class="ejercicio" aria-labelledby="titulo-objeto" >
-            <h2 id="titulo-objeto" >Manejo de Objetos y JSON</h2>
-            <p>Edita el taller y elije que operación deseas aplicar</p>
-            <form id="form-objeto" class="formulario">
+        <section class="ejercicio" aria-labelledby="titulo-texto" >
+            <h2 id="titulo-texto" >3.- Strings y fechas</h2>
+            <p>La fecha usa el mismo formato <strong>DD/MM/AAAA</strong> valido con regex </p>
+            <form id="form-texto" class="formulario">
                 <div class="campo" >
-                    <label for="obj-nombre">Nombre</label>
-                    <input type="text" name="obj-nombre" id="obj-nombre" value="Introducción a Python">
+                    <label for="nombre-texto">Nombre (con espacios de sobra a proposito)</label>
+                    <input type="text" id="nombre-texto" name="nombre-texto" value="   María Lopez     " >
                 </div>
                 <div class="campo" >
-                    <label for="obj-instructor">Instructor</label>
-                    <input type="text" name="obj-instructor" id="obj-instructor" value="Ing. María López">
+                    <label for="cupo-texto">Cupo (para el template)</label>
+                    <input type="number" id="cupo-texto" name="cupo-texto" value="25" min="0" >
                 </div>
                 <div class="campo" >
-                    <label for="obj-cupo">Cupo</label>
-                    <input type="number" name="obj-cupo" id="obj-cupo" value="25" min="0">
+                    <label for="fecha-texto">Fecha de assitencia (DD/MM/AAAA)</label>
+                    <input type="text" id="fecha-texto" name="fecha-texto" value="05/09/2026" placeholder="05/09/2026" >
+                    <span class="error"  id="error-fecha"></span>
                 </div>
-                <div class="campo" >
-                    <label for="obj-inscritos">Inscritos</label>
-                    <input type="number" name="obj-inscritos" id="obj-inscritos" value="25" min="0">
-                </div>
-
-                <div class="campo" >
-                    <label for="operacion-objeto">Tipo de Operación</label>
-                    <select name="operacion-objeto" id="operacion-objeto">
-                        <option value="keys">Object.keys</option>
-                        <option value="values">Object.values</option>
-                        <option value="entries">Object.entries</option>
-                        <option value="stringify">JSON a Cadena</option>
-                        <option value="roundtrip">Ida y Vuelta (JSON a Cadena)</option>
-                    </select>
-                </div>
-                <button type="submit" >Ejecutar Opción</button>
+                <button type="submit" >Ejecutar</button>
             </form>
-            <output class="resultado" id="resultado-objeto" for="form-objeto" ></output>
+            <output class="resultado" id="resultado-texto" for="form-texto" ></output>
         </section>
     </main>
     
