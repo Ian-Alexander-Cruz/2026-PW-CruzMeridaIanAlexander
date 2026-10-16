@@ -13,5 +13,4 @@ const pool = mysql.createPool({
     password: "n0m3l0",
     database: "cecyt9_local",
     dateStrings: true
-
 })
