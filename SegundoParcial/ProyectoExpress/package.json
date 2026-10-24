@@ -1,9 +1,9 @@
 {
-  "name": "proyectoexpress",
+  "name": "talleres",
   "version": "1.0.0",
-  "description": "Este es un ejemplo de proyecto con Express",
+  "description": "Backend de talleres",
   "license": "ISC",
-  "author": "Ian Alexander Cruz Merida",
+  "author": "JAVALINES",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,6 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "express": "^5.3.0",
-    "mysql2": "^3.24.5"
+    "mysql2": "^3.24.6"
   }
 }
