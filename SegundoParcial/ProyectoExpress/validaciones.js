@@ -1,19 +1,20 @@
-//vamos a dejarles 2 de las 3 funciones para validar
-const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const regexBoleta = /^20[2-3]\d(0[1-9]|1[0-5])\d{4}$/;
+// Reglas de validación de los datos de un usuario. Son las mismas que usa el front
+// (mini-proyecto-next/lib/validaciones.js) y las que Pruebas de Software prueba con Jest.
+// El backend las vuelve a revisar porque una petición con Postman se salta el front.
 
-function validarCorreo(correo){
-    return regexEmail.test(correo)
+function validarCorreo(correo) {
+  if (typeof correo !== 'string') return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim());
 }
 
-function validarBoleta(boleta){
-    return regexBoleta.test(boleta)
+function validarBoleta(boleta) {
+  if (typeof boleta !== 'string') return false;
+  return /^\d{10}$/.test(boleta.trim());
 }
 
-
-function validarContrasena(contrasena){
-    if (typeof contrasena !== "string") return false
-    return contrasena.length >= 8
+function validarContrasena(contrasena) {
+  if (typeof contrasena !== 'string') return false;
+  return contrasena.length >= 8;
 }
 
-module.exports = {validarBoleta, validarContrasena, validarCorreo}
+module.exports = { validarCorreo, validarBoleta, validarContrasena };
