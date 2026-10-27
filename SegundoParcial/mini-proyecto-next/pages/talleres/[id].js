@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { pedirJSON } from '../../lib/api';
 import { formatearFecha, ocultarBoleta } from '../../lib/formato';
 import { validarBoleta } from '../../lib/validaciones';
+import { validarNombre } from '../../lib/validaciones';
 import estilos from '../../styles/Talleres.module.css';
 
 // /talleres/[id] — detalle de un taller.
@@ -66,6 +67,7 @@ export default function DetalleTaller() {
     if (asistencias.some((a) => a.boleta === boletaLimpia)) {
         return setErrorForm('Esa boleta ya está inscrita en este taller.');
     }
+    if(!validarNombre(nombreLimpio)) return setErrorForm("El nombre es muy largo");
     if (lleno) return setErrorForm('El taller ya no tiene lugares.');
 
     setEnviando(true);

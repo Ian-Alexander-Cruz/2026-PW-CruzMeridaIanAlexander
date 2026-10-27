@@ -16,3 +16,8 @@ export function validarContrasena(contrasena) {
   if (typeof contrasena !== 'string') return false;
   return contrasena.length >= 8;
 }
+
+export function validarNombre(nombre){
+  if(typeof nombre !== "string") return false;
+  return /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{1,50}$/.test(nombre.trim())
+}
