@@ -34,6 +34,7 @@ function crearApp(config, pool){
 
     app.use(
         session({
+            store: almacen,
             name : NOMBRE_COOKIE,
             //aqui tenemos que definir si es secreta, si es publica o como es su acceso
             secret: process.env.SESSION_SECRET || 'secreto-solo-para-demo',
@@ -41,7 +42,7 @@ function crearApp(config, pool){
             saveUninitialized: false,
             rolling : config.rolling,
             cookie:{
-                maxAge: config.maxAge || 1000 * 60 * 60 * 24,
+                maxAge: config.maxAgeMs || 1000 * 60 * 60 * 24,
                 httpOnly: config.httpOnly || true,
                 sameSite: config.sameSite || 'lax',
                 secure: config.secure || false
@@ -55,7 +56,7 @@ function crearApp(config, pool){
     //como estamos ocupando un middleware dentro de la app, necesitamos verificar el vencimiento de la sesión, express-session alarga por defecto el vencimiento guardadno en el servidor por cada petición aunque el rolling sea en false, si solo confiamos en esto alguien nos puede copiar la cookie y mantener vivia la sesión creando un defecto de seguridad
     function vencida(sesion){
         const desde = config.rolling ? sesion.ultimoUso : sesion.creada;
-        return Date.now() - desde > config.maxAge;
+        return Date.now() - desde > config.maxAgeMs;
     }
 
     //401 no estas autorizado
@@ -144,7 +145,7 @@ function crearApp(config, pool){
         res.json({
             usuario : req.session.usuario,
             sesion : idCorto(req.sessionID),
-            expiraEnSegundos : Math.max(0, Math.round((desde + config.maxAge - Date.now())/10000)),
+            expiraEnSegundos : Math.max(0, Math.round((desde + config.maxAgeMs - Date.now())/1000)),
         });
     });
 
