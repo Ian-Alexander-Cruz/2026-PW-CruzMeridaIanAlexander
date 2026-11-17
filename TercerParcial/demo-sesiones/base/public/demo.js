@@ -7,6 +7,8 @@ const CLAVES = {
   admin: 'admin12345'
 };
 
+
+//Aqui concentro el fetch y el manejo de errores para que ninguna otra funcion tenga que manejar si falló la red o si la respuesta no es un JSON y asi todas reciben lo mismo {status, datos}
 async function llamar(metodo, url, cuerpo) {
     const opciones = {method: metodo}
     if(cuerpo !== undefined){
@@ -31,7 +33,7 @@ async function llamar(metodo, url, cuerpo) {
     return {status: res.status, datos}
 }
 
-
+//Sirve para mostrar las evidencias en la pantalla y se colorea el codigo con if's para distinguirlos
 async function bitacora(metodo, url, codigo, datos) {
     const li = document.createElement("li")
 
@@ -54,6 +56,7 @@ async function bitacora(metodo, url, codigo, datos) {
     $("bitacora").prepend(li)
 }
 
+//esta funcion sirve para actualizar el estado de la sesion, y como se pidió muestra la cookie si no esta el efecto de httpOnly
 async function actualizarEstado() {
     const r = await llamar('GET', '/api/sesion');
 
@@ -72,6 +75,7 @@ async function actualizarEstado() {
     $('cookie-js').textContent = document.cookie || '(vacío)';
 }
 
+//Sirve para mostrar las sesiones que estan en el servidor o la base de datos, se reconstruye completa en cada refresh para no dejar las filas viejas
 async function actualizarTabla() {
     const r = await llamar('GET', '/api/diagnostico/sesiones');
 
@@ -112,15 +116,13 @@ async function actualizarTabla() {
     }
 }
 
-$("usuario").addEventListener("change", () => {
-    $("contrasena").value = CLAVES[$("usuario").value] || "";
-})
-
+//refresca el estado y la tabla ya que siempre estan juntos asi cada que se actualiza no se tienen que hacer por separado con el riezgo de olvidarte
 async function refrescar() {
     await actualizarEstado();
     await actualizarTabla();
 }
 
+//sirve para ver de forma visual la configuracion del servidor, inserta el json de la peticion en "config"
 async function mostrarConfig() {
     const r = await llamar('GET', '/api/config');
     $('config').textContent = JSON.stringify(r.datos, null, 2);
@@ -129,16 +131,6 @@ async function mostrarConfig() {
 $("usuario").addEventListener("change", () => {
     $("contrasena").value = CLAVES[$("usuario").value] || "";
 });
-
-async function refrescar() {
-    await actualizarEstado();
-    await actualizarTabla();
-}
-
-async function mostrarConfig() {
-    const r = await llamar('GET', '/api/config');
-    $('config').textContent = JSON.stringify(r.datos, null, 2);
-}
 
 $('form-login').addEventListener('submit', async (evento) => {
   evento.preventDefault();
