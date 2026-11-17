@@ -43,7 +43,7 @@ function crearApp(config, pool){
             rolling : config.rolling,
             cookie:{
                 maxAge: config.maxAgeMs || 1000 * 60 * 60 * 24,
-                httpOnly: config.httpOnly || true,
+                httpOnly: config.httpOnly ?? true,
                 sameSite: config.sameSite || 'lax',
                 secure: config.secure || false
             }
@@ -77,7 +77,7 @@ function crearApp(config, pool){
     function requiereRol(rol){
         return (req, res, next)=>{
             if(req.session.usuario.rol !== rol){
-                return res.status(403).json({error: `Eres ${res.session.usuario.usuario}, pero esta ruta es para ${rol}`});
+                return res.status(403).json({error: `Eres ${req.session.usuario.usuario}, pero esta ruta es para ${rol}`});
             }
             next();
         };
@@ -151,8 +151,12 @@ function crearApp(config, pool){
 
     app.get('/api/perfil', requiereSesion, (req, res)=>{
         req.session.visitas = (req.session.visitas || 0) + 1;
-        res.json({mensaje : `Hola ${req.session.usuario.nombre} rol: ${req.session.usuario.rol}, visitas : ${req.session.visitas}`});
+        res.json({mensaje : `Hola ${req.session.usuario.nombre} rol: ${req.session.usuario.rol}, visitas : ${req.session.visitas}`, visitas: req.session.visitas});
     });
+
+    app.get("/api/admin/reporte", requiereSesion, requiereRol("admin"), (req, res) => {
+        res.json({reporte: 'Talleres: 3 · Inscritos: 57 · Cupo libre: 18'})
+    })
 
     //vamos a desarrollar una prueba uitadria para verificar con v o fl las pruebas ejecutadas
 
