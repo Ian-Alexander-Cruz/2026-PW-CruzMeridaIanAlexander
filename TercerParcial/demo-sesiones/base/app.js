@@ -5,6 +5,9 @@ const express = require('express');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const { crearModeloUsuarios } = require('./modelos/usuarios.modelo');
+const crypto = require("crypto")
+jtw = require("jsonwebtoken")
+
 
 const NOMBRE_COOKIE = 'connect.sid';
 
@@ -196,5 +199,4 @@ module.exports = {crearApp, NOMBRE_COOKIE}
 //tarea 1 deberan de realizar una infografia sobre la autenticación con el uso de jwt y como se implementa para el domingo
 
 //tarea 2 con el uso del archivo que se les va a proveer deberan de completar y realizar las pruebas al ejercciio de sesiones en el archivo llamado xxx para implementar en el archivo demo.js, se evaluara la siguiente clase.
-
 
