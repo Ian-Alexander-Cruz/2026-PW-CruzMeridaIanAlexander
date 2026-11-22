@@ -6,7 +6,7 @@ function crearModeloToken(pool){
 
     async function revocar(jti, usuario, exp) {
         await pool.query(
-            "INSERT INTO tokens_revocados (jti, usuario, expira) VALUES (?, ?, FROM_UNIXTIME(?))"
+            "INSERT INTO tokens_revocados (jti, usuario, expira) VALUES (?, ?, FROM_UNIXTIME(?))", [jti, usuario, exp]
         )
     }
 
@@ -22,7 +22,7 @@ function crearModeloToken(pool){
     // una funcion para poder consultar todos los tokens revocados
     async function listar() {
         const [filas] = await pool.query(
-            "SELECT jti, Usuario, expora, revocado_en FROM tokens_revocados ORDER BY revocado_en DESC, jti"
+            "SELECT jti, usuario, expira, revocado_en FROM tokens_revocados ORDER BY revocado_en DESC, jti"
         )
         return filas
     }
