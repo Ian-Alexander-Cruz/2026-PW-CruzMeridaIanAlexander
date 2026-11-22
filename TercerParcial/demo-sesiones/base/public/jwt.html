@@ -54,11 +54,11 @@
       <h2>3 · Pedirle cosas al servidor</h2>
       <p class="detalle">Cada petición manda <code>Authorization: Bearer &lt;token&gt;</code>. Lo pone <strong>este JavaScript</strong>, no el navegador.</p>
       <div class="botones">
-        <button type="button" data-metodo="GET" data-url="/api/perfil">GET /api/perfil</button>
-        <button type="button" data-metodo="GET" data-url="/api/perfil" data-sin-token="si">GET /api/perfil SIN token</button>
-        <button type="button" data-metodo="GET" data-url="/api/admin/reporte">GET /api/admin/reporte</button>
-        <button type="button" data-metodo="GET" data-url="/api/sesion">GET /api/sesion</button>
-        <button type="button" data-metodo="POST" data-url="/api/logout" class="peligro">POST /api/logout</button>
+        <button type="button" data-metodo="GET" data-url="/api/jwt/perfil">GET /api/jwt/perfil</button>
+        <button type="button" data-metodo="GET" data-url="/api/jwt/perfil" data-sin-token="si">GET /api/jwt/perfil SIN token</button>
+        <button type="button" data-metodo="GET" data-url="/api/jwt/admin/reporte">GET /api/jwt/admin/reporte</button>
+        <button type="button" data-metodo="POST" data-url="/api/jwt/refresh">POST /api/jwt/refresh</button>
+        <button type="button" data-metodo="POST" data-url="/api/jwt/logout" class="peligro">POST /api/jwt/logout</button>
       </div>
       <ol id="bitacora" class="bitacora" reversed></ol>
     </section>

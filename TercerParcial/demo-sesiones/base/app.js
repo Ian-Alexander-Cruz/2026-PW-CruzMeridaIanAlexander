@@ -282,6 +282,18 @@ function crearApp(config, pool){
         }
     });
 
+    app.get('/api/diagnostico/jwt', async (req, res, next) => {
+        try {
+            const sesiones = await todasLasSesiones(almacen);
+            res.json({
+                sesionesEnMySQL: Object.keys(sesiones || {}).length,
+                revocados: await tokens.listar(),
+            });
+        } catch (error) {
+            next(error);
+        }
+    });
+
     app.use(express.static(path.join(__dirname, 'public')));
 
     app.use((error, req, res, next)=>{
