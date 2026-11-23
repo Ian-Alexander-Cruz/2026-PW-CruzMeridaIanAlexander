@@ -1,270 +1,188 @@
 const $ = (id) => document.getElementById(id);
-
 const CLAVE = 'token';
 
-const CLAVES = {
-  ana: 'ana12345',
-  luis: 'luis12345',
-  admin: 'admin12345'
-};
+// ---------- Guardar el token en el navegador ----------
 
 function leerToken() {
-    try {
-        return localStorage.getItem(CLAVE);
-    } catch {
-        return null;
-    }
+  try { return localStorage.getItem(CLAVE); } catch { return null; }
 }
-
 function guardarToken(token) {
-    try {
-        localStorage.setItem(CLAVE, token);
-    } catch {}
-    mostrarToken();
+  try { localStorage.setItem(CLAVE, token); } catch { /* sin localStorage: no se guarda */ }
+  pintarToken();
+}
+function borrarToken() {
+  try { localStorage.removeItem(CLAVE); } catch { /* nada que borrar */ }
+  pintarToken();
 }
 
-function borrarToken() {
-    try {
-        localStorage.removeItem(CLAVE);
-    } catch {}
-    mostrarToken();
-}
+// ---------- Leer un JWT (sin la clave: el payload NO va cifrado, solo codificado en base64url) ----------
 
 function base64urlATexto(parte) {
-    const base64 = parte.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(parte.length / 4) * 4, '=');
-    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-    return new TextDecoder().decode(bytes);
+  const base64 = parte.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(parte.length / 4) * 4, '=');
+  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
 }
-
 function textoABase64url(texto) {
-    const bytes = new TextEncoder().encode(texto);
-    let binario = '';
-    bytes.forEach((b) => { binario += String.fromCharCode(b); });
-    return btoa(binario).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const bytes = new TextEncoder().encode(texto);
+  let binario = '';
+  bytes.forEach((b) => { binario += String.fromCharCode(b); });
+  return btoa(binario).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
-
 function decodificar(token) {
-    const partes = (token || '').split('.');
-    if (partes.length !== 3) return null;
-
-    try {
-        return {
-            partes,
-            cabecera: JSON.parse(base64urlATexto(partes[0])),
-            carga: JSON.parse(base64urlATexto(partes[1]))
-        };
-    } catch {
-        return null;
-    }
+  const partes = (token || '').split('.');
+  if (partes.length !== 3) return null;
+  try {
+    return { partes, cabecera: JSON.parse(base64urlATexto(partes[0])), carga: JSON.parse(base64urlATexto(partes[1])) };
+  } catch {
+    return null;
+  }
 }
 
-async function llamar(metodo, url, cuerpo, sinToken = false) {
-    const opciones = { method: metodo, headers: {} };
+// ---------- Hablar con la API ----------
 
-    const token = leerToken();
-    if (token && !sinToken) opciones.headers.Authorization = 'Bearer ' + token;
-
-    if (cuerpo !== undefined) {
-        opciones.headers['Content-Type'] = 'application/json';
-        opciones.body = JSON.stringify(cuerpo);
-    }
-
-    const conToken = Boolean(opciones.headers.Authorization);
-
-    let res;
-    try {
-        res = await fetch(url, opciones);
-    } catch (error) {
-        return { status: 0, datos: { error: `No se pudo conectar: ${error.message}` }, conToken };
-    }
-
-    let datos = null;
-    try {
-        datos = await res.json();
-    } catch {
-        datos = null;
-    }
-
-    return { status: res.status, datos, conToken };
+async function llamar(metodo, url, { cuerpo, sinToken = false } = {}) {
+  const headers = {};
+  const token = leerToken();
+  if (token && !sinToken) headers.Authorization = `Bearer ${token}`;
+  if (cuerpo) headers['Content-Type'] = 'application/json';
+  const respuesta = await fetch(url, { method: metodo, headers, body: cuerpo ? JSON.stringify(cuerpo) : undefined });
+  let datos = null;
+  try { datos = await respuesta.json(); } catch { datos = null; }
+  return { status: respuesta.status, datos, mandoToken: Boolean(headers.Authorization) };
 }
 
-function bitacora(metodo, url, codigo, datos, conToken) {
-    const li = document.createElement('li');
-
-    let clase = 'error';
-    if (codigo === 401) clase = 'e401';
-    else if (codigo === 403) clase = 'e403';
-    else if (codigo >= 200 && codigo < 300) clase = 'ok';
-
-    const etiqueta = document.createElement('span');
-    etiqueta.className = 'codigo ' + clase;
-    etiqueta.textContent = codigo;
-
-    const titulo = document.createElement('strong');
-    titulo.textContent = ' ' + metodo + ' ' + url + (conToken ? ' · con Bearer' : ' · SIN token');
-
-    const detalle = document.createElement('pre');
-    detalle.textContent = JSON.stringify(datos, null, 2);
-
-    li.append(etiqueta, titulo, detalle);
-    $('bitacora').prepend(li);
+function anotar(metodo, url, status, datos, mandoToken) {
+  const li = document.createElement('li');
+  const clase = status < 300 ? 'ok' : status === 401 ? 'e401' : status === 403 ? 'e403' : 'error';
+  const codigo = document.createElement('span');
+  codigo.className = `codigo ${clase}`;
+  codigo.textContent = status;
+  const linea = document.createElement('code');
+  linea.textContent = ` ${metodo} ${url} ${mandoToken ? '· con Bearer' : '· SIN token'}`;
+  const cuerpo = document.createElement('pre');
+  cuerpo.textContent = JSON.stringify(datos, null, 2);
+  li.append(codigo, linea, cuerpo);
+  $('bitacora').prepend(li);
 }
 
-function mostrarToken() {
-    const token = leerToken();
-    $('token').value = token || '';
-    $('ls-js').textContent = token || '(vacío)';
-    $('cookie-js').textContent = document.cookie || '(vacío)';
+// ---------- Pintar ----------
 
-    const jwt = decodificar(token);
-    const partes = $('partes');
-    partes.replaceChildren();
+function pintarToken() {
+  const token = leerToken();
+  $('token').value = token || '';
+  $('ls-js').textContent = token || '(vacío)';
+  $('cookie-js').textContent = document.cookie || '(vacío)';
 
-    if (!jwt) {
-        partes.textContent = token ? '(no es un JWT: deben ser 3 partes separadas por puntos)' : '—';
-        $('cabecera').textContent = '—';
-        $('carga').textContent = '—';
-    } else {
-        const clases = ['jwt-cabecera', 'jwt-carga', 'jwt-firma'];
-        clases.forEach((clase, i) => {
-            if (i > 0) partes.append('.');
-            const span = document.createElement('span');
-            span.className = clase;
-            span.textContent = jwt.partes[i];
-            partes.append(span);
-        });
+  const jwt = decodificar(token);
+  const partes = $('partes');
+  partes.textContent = '';
+  if (!jwt) {
+    partes.textContent = token ? '(no es un JWT: deben ser 3 partes separadas por puntos)' : '—';
+    $('cabecera').textContent = '—';
+    $('carga').textContent = '—';
+  } else {
+    ['jwt-cabecera', 'jwt-carga', 'jwt-firma'].forEach((clase, i) => {
+      if (i > 0) partes.append('.');
+      const span = document.createElement('span');
+      span.className = clase;
+      span.textContent = jwt.partes[i];
+      partes.append(span);
+    });
+    $('cabecera').textContent = JSON.stringify(jwt.cabecera, null, 2);
+    const carga = { ...jwt.carga };
+    if (carga.iat) carga.iat = `${carga.iat}  (${new Date(carga.iat * 1000).toLocaleTimeString()})`;
+    if (carga.exp) carga.exp = `${carga.exp}  (${new Date(carga.exp * 1000).toLocaleTimeString()})`;
+    $('carga').textContent = JSON.stringify(carga, null, 2);
+  }
+  pintarEstado();
+}
 
-        $('cabecera').textContent = JSON.stringify(jwt.cabecera, null, 2);
+// El reloj del NAVEGADOR: solo informa. Quien decide si el token sirve es el servidor.
+function pintarEstado() {
+  const jwt = decodificar(leerToken());
+  const estado = $('estado');
+  if (!jwt) {
+    estado.textContent = 'Sin token: para el servidor eres anónimo (401)';
+    estado.className = 'estado sin-sesion';
+    return;
+  }
+  const faltan = jwt.carga.exp - Math.floor(Date.now() / 1000);
+  if (faltan > 0) {
+    estado.textContent = `Token de ${jwt.carga.usuario} · rol ${jwt.carga.rol} · vence en ${faltan} s (según el reloj del navegador)`;
+    estado.className = 'estado con-sesion';
+  } else {
+    estado.textContent = `Token de ${jwt.carga.usuario} VENCIDO hace ${-faltan} s`;
+    estado.className = 'estado sin-sesion';
+  }
+}
 
-        const carga = { ...jwt.carga };
-        if (carga.iat) carga.iat = carga.iat + '  (' + new Date(carga.iat * 1000).toLocaleTimeString('es-MX') + ')';
-        if (carga.exp) carga.exp = carga.exp + '  (' + new Date(carga.exp * 1000).toLocaleTimeString('es-MX') + ')';
-        $('carga').textContent = JSON.stringify(carga, null, 2);
+async function refrescarServidor() {
+  const { datos } = await llamar('GET', '/api/diagnostico/jwt', { sinToken: true });
+  if (!datos) return;
+  $('sesiones-mysql').textContent = `Filas en la tabla sessions: ${datos.sesionesEnMySQL}. Con JWT el servidor no crea ninguna.`;
+  const cuerpo = $('tabla-revocados');
+  cuerpo.textContent = '';
+  if (datos.revocados.length === 0) {
+    const fila = cuerpo.insertRow();
+    const celda = fila.insertCell();
+    celda.colSpan = 3;
+    celda.textContent = '(vacía)';
+    return;
+  }
+  for (const t of datos.revocados) {
+    const fila = cuerpo.insertRow();
+    for (const valor of [t.jti, t.usuario, new Date(t.expira).toLocaleTimeString()]) {
+      fila.insertCell().textContent = valor;
     }
-
-    actualizarEstado();
+  }
 }
 
-function actualizarEstado() {
-    const jwt = decodificar(leerToken());
-
-    if (!jwt) {
-        $('estado').className = 'estado sin-sesion';
-        $('estado').textContent = 'Sin token: para el servidor eres anónimo (401)';
-        return;
-    }
-
-    const faltan = jwt.carga.exp - Math.floor(Date.now() / 1000);
-
-    if (faltan > 0) {
-        $('estado').className = 'estado con-sesion';
-        $('estado').textContent =
-        'Token de ' + jwt.carga.usuario + ' · ' +
-        'rol ' + jwt.carga.rol + ' · ' +
-        'vence en ' + faltan + ' s (según el reloj del navegador)';
-    } else {
-        $('estado').className = 'estado sin-sesion';
-        $('estado').textContent = 'Token de ' + jwt.carga.usuario + ' VENCIDO hace ' + (-faltan) + ' s';
-    }
-}
-
-async function actualizarTabla() {
-    const r = await llamar('GET', '/api/diagnostico/jwt', undefined, true);
-    if (!r.datos || !r.datos.revocados) return;
-
-    $('sesiones-mysql').textContent =
-        'Filas en la tabla sessions: ' + r.datos.sesionesEnMySQL + '. Con JWT el servidor no crea ninguna.';
-
-    const tbody = $('tabla-revocados');
-    tbody.replaceChildren();
-
-    if (r.datos.revocados.length === 0) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 3;
-        td.textContent = '(vacía)';
-        tr.append(td);
-        tbody.append(tr);
-        return;
-    }
-
-    for (const t of r.datos.revocados) {
-        const tr = document.createElement('tr');
-
-        const valores = [
-        t.jti,
-        t.usuario,
-        t.expira ? new Date(t.expira).toLocaleTimeString('es-MX') : '—'
-        ];
-
-        for (const valor of valores) {
-        const td = document.createElement('td');
-        td.textContent = valor;
-        tr.append(td);
-        }
-        tbody.append(tr);
-    }
-}
-
-async function refrescar() {
-    mostrarToken();
-    await actualizarTabla();
-}
-
-async function mostrarConfig() {
-    const r = await llamar('GET', '/api/config', undefined, true);
-    $('config').textContent = JSON.stringify(r.datos, null, 2);
-}
+// ---------- Eventos ----------
 
 $('usuario').addEventListener('change', () => {
-    $('contrasena').value = CLAVES[$('usuario').value] || '';
+  $('contrasena').value = `${$('usuario').value}12345`;
 });
 
 $('form-login').addEventListener('submit', async (evento) => {
   evento.preventDefault();
-
-  const r = await llamar('POST', '/api/jwt/login', {
-    usuario: $('usuario').value,
-    contrasena: $('contrasena').value
-  }, true);
-
-  bitacora('POST', '/api/jwt/login', r.status, r.datos, r.conToken);
-  if (r.status === 200 && r.datos && r.datos.token) guardarToken(r.datos.token);
-  await refrescar();
+  const cuerpo = { usuario: $('usuario').value, contrasena: $('contrasena').value };
+  const { status, datos } = await llamar('POST', '/api/jwt/login', { cuerpo, sinToken: true });
+  anotar('POST', '/api/jwt/login', status, datos, false);
+  if (status === 200 && datos && datos.token) guardarToken(datos.token);
+  await refrescarServidor();
 });
 
-document.querySelectorAll('[data-url]').forEach((boton) => {
+for (const boton of document.querySelectorAll('[data-url]')) {
   boton.addEventListener('click', async () => {
-    const metodo = boton.dataset.metodo;
-    const url = boton.dataset.url;
+    const { metodo, url } = boton.dataset;
     const sinToken = boton.dataset.sinToken === 'si';
-
-    const r = await llamar(metodo, url, undefined, sinToken);
-
-    bitacora(metodo, url, r.status, r.datos, r.conToken);
-    if (url === '/api/jwt/refresh' && r.status === 200 && r.datos && r.datos.token) guardarToken(r.datos.token);
-    if (url === '/api/jwt/logout') borrarToken();
-    await refrescar();
+    const { status, datos, mandoToken } = await llamar(metodo, url, { sinToken });
+    anotar(metodo, url, status, datos, mandoToken);
+    if (url === '/api/jwt/refresh' && status === 200 && datos.token) guardarToken(datos.token);
+    if (url === '/api/jwt/logout') borrarToken(); // del lado del navegador, cerrar sesión = olvidar el token
+    await refrescarServidor();
   });
-});
+}
 
 $('btn-usar').addEventListener('click', () => {
-    const token = $('token').value.trim();
-    if (token) guardarToken(token);
-    else borrarToken();
+  const token = $('token').value.trim();
+  if (token) guardarToken(token); else borrarToken();
 });
 
+// Cambia el rol DENTRO del payload y deja la firma original. ¿Lo aceptará el servidor?
 $('btn-alterar').addEventListener('click', () => {
-    const jwt = decodificar(leerToken());
-    if (!jwt) return;
-
-    const carga = { ...jwt.carga, rol: 'admin' };
-    guardarToken(jwt.partes[0] + '.' + textoABase64url(JSON.stringify(carga)) + '.' + jwt.partes[2]);
+  const jwt = decodificar(leerToken());
+  if (!jwt) return;
+  const carga = { ...jwt.carga, rol: 'admin' };
+  guardarToken(`${jwt.partes[0]}.${textoABase64url(JSON.stringify(carga))}.${jwt.partes[2]}`);
 });
 
 $('btn-borrar').addEventListener('click', borrarToken);
-$('btn-servidor').addEventListener('click', actualizarTabla);
+$('btn-servidor').addEventListener('click', refrescarServidor);
 
-refrescar();
-mostrarConfig();
-setInterval(actualizarEstado, 1000);
+llamar('GET', '/api/config', { sinToken: true }).then(({ datos }) => {
+  $('config').textContent = JSON.stringify(datos, null, 2);
+});
+pintarToken();
+refrescarServidor();
+setInterval(pintarEstado, 1000);
